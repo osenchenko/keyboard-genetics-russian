@@ -1,5 +1,7 @@
 # Keyboard Genetics
 
+Форк проекта https://github.com/MadRabbit/keyboard-genetics адаптированный под поиск наилучшей расскладки на русском языке.
+
 This project is an attempt to discover and design the most efficient keyboard
 layout by using an evolution algorithm based AI.
 
