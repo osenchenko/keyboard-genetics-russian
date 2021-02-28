@@ -35,6 +35,10 @@ module.exports = class Stats {
     return this.data.position;
   }
 
+  get reverseOrderDigrams(){
+    return this.data.reverseOrderDigrams;
+  }
+
   get fingersUsage() {
     const counts = fingers.map(name => this.data.counts[name]);
     return percentages(counts.map(counts => sum(counts)));

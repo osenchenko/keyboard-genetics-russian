@@ -3,19 +3,29 @@
  *
  * __NOTE__ all of the values are normalized by a 1/10th of a key size
  */
+const fs = require('fs');
 
-exports.EFFORT_LIMIT        = 3000000;
+exports.EFFORT_LIMIT        = 3000000;  //was 3000000
 exports.SAME_FINGER_PENALTY = 10; // multiplier
 exports.SAME_HAND_PENALTY   = 1; // multiplier
 
 // just a mapping for easier conversions
+// const COORDINATES = parseMapping(`
+//  ~ 1 2 3 4 5 6 7 8 9 0 - =
+//    q w e r t y u i o p [ ] \\
+//    a s d f g h j k l ; ' \\n
+//     z x c v b n m , . /
+//  l-shift    space    r-shift
+// `);
 const COORDINATES = parseMapping(`
  ~ 1 2 3 4 5 6 7 8 9 0 - =
-   q w e r t y u i o p [ ] \\
-   a s d f g h j k l ; ' \\n
-    z x c v b n m , . /
+   й ц у к е н г ш щ з х \` \\
+   ф ы в а п р о л д ж э \\n
+    я ч с м и т ь б ю .
  l-shift    space    r-shift
 `);
+
+
 
 // distances a finger must travel, those are measured from a standard keyboard
 exports.DISTANCES = buildMapping(`
@@ -81,3 +91,15 @@ function buildMapping(string) {
     })
   , {});
 };
+
+// function onErr(err) {
+//   if (err) throw err;
+// }
+// fs.writeFile("output.log", "coordinates\n", onErr);
+// fs.writeFile("coordinates.log", this.COORDINATES, onErr);
+// fs.writeFile("output.log", "distanses\n", onErr);
+// fs.writeFile("distances.log", JSON.stringify(this.DISTANCES), onErr);
+// fs.writeFile("output.log", "fingers\n", onErr);
+// fs.writeFile("fingers.log", JSON.stringify(this.FINGERS), onErr);
+// fs.writeFile("output.log", "efforts\n", onErr);
+// fs.writeFile("efforts.log", JSON.stringify(this.EFFORTS), onErr);

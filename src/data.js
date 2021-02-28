@@ -13,6 +13,7 @@ const text = exports.text = fs.readdirSync("text")
   .map(filename => fs.readFileSync(`text/${filename}`))
   .join("\n\n");
 
+
 const CODE_CMD = "find . -type f -name *.js | xargs cat $1";
 const code = exports.code = execSync(CODE_CMD, {timeout: 0, maxBuffer: 1024 * 1024 * 1024}).toString();
 

@@ -1,6 +1,7 @@
 const chalk   = require("chalk");
 const blessed = require("blessed");
 const contrib = require("blessed-contrib");
+const fs = require("fs");
 
 const results = [];
 const screen  = blessed.screen();
@@ -114,8 +115,17 @@ exports.addResult = function addResult(layout, score, no_changes_in, max_no_chag
     `Symmetry: ${chalk.gray(score.symmetry+"%")}\n`+
     `Evenness: ${chalk.gray(score.evenness+"%")}\n`+
     `Hands: ${chalk.gray(score.handsUsage.map(v => v+"%").join(" | "))}\n`+
-    `Overheads: ${chalk.gray(`F:${overheads.finger}%, H:${overheads.hand}%, S:${overheads.shift}%`)}`
+    `Overheads: ${chalk.gray(`F:${overheads.finger}%, H:${overheads.hand}%, S:${overheads.shift}%`)}, RDi:${score.reverseOrderDigrams}%`
   );
+
+// fs.appendFileSync("results", layout.name+"\n");
+// fs.appendFileSync("results", "Symmetry: "+score.symmetry+ "\n");
+// fs.appendFileSync("results", "Evenness: " + score.evenness+"\n");
+// fs.appendFileSync("results", "Hands: " + score.handsUsage.map(v=>v+"%").join(" | ") +"\n");
+// fs.appendFileSync("results", "Overheads: F: "+overheads.finger + " H: " +overheads.hand+" ReverseOrderDigrams: "+ score.reverseOrderDigrams+ "%\n");
+// fs.appendFileSync("results", "Fingers usage: "+ score.fingersUsage+ "\n");
+// fs.appendFileSync("results", "\n");
+  // fs.appendFileSync("results", +"\n");
 
   fingers_chart.setData({
     titles: score.fingersUsage.map(() => " "),
@@ -200,32 +210,39 @@ function redrawResultsChart() {
 
 // https://en.wikipedia.org/wiki/Letter_frequency
 const letter_frequencies = {
-  e: [12.702, "white"],
-  t: [9.056, "white"],
-  a: [8.167, "yellow"],
-  o: [7.507, "yellow"],
-  i: [6.966, "yellow"],
-  n: [6.749, "yellow"],
-  s: [6.327, "yellow"],
-  h: [6.094, "red"],
-  r: [5.987, "red"],
-  d: [4.253, "red"],
-  l: [4.025, "red"],
-  u: [2.758, "magenta"],
-  c: [2.782, "magenta"],
-  m: [2.406, "magenta"],
-  w: [2.361, "magenta"],
-  f: [2.228, "magenta"],
-  g: [2.015, "magenta"],
-  y: [1.974, "magenta"],
-  p: [1.929, "magenta"],
-  b: [1.492, "cyan"],
-  v: [0.978, "cyan"],
-  k: [0.772, "cyan"],
-  j: [0.153, "blue"],
-  x: [0.150, "blue"],
-  q: [0.095, "blue"],
-  z: [0.074, "blue"]
+  о: [10.97, "white"],
+  е: [8.45, "white"],
+  а: [8.01, "yellow"],
+  и: [7.35, "yellow"],
+  н: [6.70, "yellow"],
+  т: [6.26, "yellow"],
+  с: [5.47, "yellow"],
+  р: [4.73, "red"],
+  в: [4.54, "red"],
+  л: [4.40, "red"],
+  к: [3.49, "red"],
+  м: [3.21, "magenta"],
+  д: [2.98, "magenta"],
+  п: [2.81, "magenta"],
+  у: [2.62, "magenta"],
+  я: [2.01, "magenta"],
+  ы: [1.90, "magenta"],
+  ь: [1.74, "magenta"],
+  г: [1.70, "magenta"],
+  з: [1.65, "cyan"],
+  б: [1.59, "cyan"],
+  ч: [1.44, "cyan"],
+  й: [1.21, "blue"],
+  х: [0.97, "blue"],
+  ж: [0.94, "blue"],
+  ш: [0.73, "blue"],
+  ю: [0.64, "grey"],
+  ц: [0.48, "grey"],
+  щ: [0.36, "grey"],
+  э: [0.32, "grey"],
+  ф: [0.26, "grey"],
+  ъ: [0.04, "grey"],
+  ё: [0.04, "grey"]
 };
 
 function heatmap(layout) {

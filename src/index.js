@@ -4,14 +4,19 @@ const { text, trigrams, code }  = require("./data");
 const Stats               = require("./stats");
 const Cluster             = require("./cluster");
 const Population          = require("./population");
-const { QWERTY, Workman } = require("./presets");
+const { JUCUKEN, DIKTOR, DIKTOR_M1, JUCUKEN_OPTOZORAX } = require("./presets");
+const readline = require('readline-sync');
+const { fstat } = require("fs");
+const fs = require("fs");
+
+let userinput = 0;
 
 const data         = text;
 const cluster      = new Cluster(data);
 const use_elites   = true;
-const mutate_level = 2;
-const seed_layouts = [QWERTY, Workman];
-const max_no_chage = 80;
+const mutate_level = 15;
+const seed_layouts = [JUCUKEN, DIKTOR, DIKTOR_M1, JUCUKEN_OPTOZORAX];
+const max_no_chage = 180;
 
 co(boot).catch(e => console.log(e.stack));
 
@@ -46,8 +51,10 @@ function *start(population, count) {
     population = population.next({elite: use_elites, mutate: mutate_level});
   }
 
+  userinput = readline.question("Wait for keypress");
   ui.destroy();
 
+  console.log("Last score: ", JSON.stringify(last_score));
   console.log(`Total: ${last_score.total}, Dist: ${last_score.position}\n`);
   console.log(last_layout.toString(), "\n");
   console.log(last_layout.config);

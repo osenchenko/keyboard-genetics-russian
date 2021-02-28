@@ -1,13 +1,30 @@
 const Layout      = require("./layout");
 const { FINGERS } = require("./config");
-const { QWERTY }  = require("./presets");
+const { JUCUKEN }  = require("./presets");
+const fs = require("fs");
 
-const QWERTY_SEQUENCE = QWERTY.toSequence();
+const QWERTY_SEQUENCE = JUCUKEN.toSequence();
+// const LOCK_POSITIONS  = {}; `
+//   \`:\` 1:1 2:2 3:3 4:4 5:5 6:6 7:7 8:8 9:9 0:0 -:- =:=
+//   l:w r:e      ;:y    u:i d:o [:[ ]:] \\:\\
+//   s:a h:s n:d t:f ,:g .:h a:j e:k o:l i:; ':' \\n:\\n
+//      c:v /:b y:/
+
+// `.trim().split(/\s+/).map(i => {
+//   const [key, value] = i.split(":");
+//   const normalize = v => v === "\\n" ? "\n" : v;
+//у:ф и:ы е:в о:а а:п
+//у:ф и:ы е:в о:а а:п л:р н:о т:л с:д р:ж й:э
+//  в:ф е:ы а:в о:а т:о н:л с:д \`:\` \\:\\ \\n:\\n
+  // й:й у:ц и:у я:к ф:е \`:\` \\:\\
+  // в:ф е:ы а:в о:а ч:п \\n:\\n
+  // ь:я э:ч ю:с ы:м щ:и
+
+
 const LOCK_POSITIONS  = {}; `
-  \`:\` 1:1 2:2 3:3 4:4 5:5 6:6 7:7 8:8 9:9 0:0 -:- =:=
-  l:w r:e      ;:y    u:i d:o [:[ ]:] \\:\\
-  s:a h:s n:d t:f ,:g .:h a:j e:k o:l i:; ':' \\n:\\n
-     c:v /:b y:/
+  ~:~ 1:1 2:2 3:3 4:4 5:5 6:6 7:7 8:8 9:9 0:0 -:- =:=
+  \`:\` \\:\\
+  \\n:\\n
 
 `.trim().split(/\s+/).map(i => {
   const [key, value] = i.split(":");
@@ -17,8 +34,10 @@ const LOCK_POSITIONS  = {}; `
 });
 
 // symbols that must be under the same hand
+  // ["о", "е", "а", "я", "э", "у", "и", "ы", "ю"]
 const SAME_HANDS = [
-  ["t", "h"]
+  ["о", "а", "е", "и", "у", "я", "ы", "ю", "э", "ь"]
+  // ["и", "я"]
 ];
 
 const GENOFOND = [];
@@ -35,6 +54,8 @@ class Genome {
     for (let key in LOCK_POSITIONS) {
       base[LOCK_POSITIONS[key]] = key;
     }
+    // fs.appendFileSync("base_genom", "1: "+base.length+"\n");
+    // fs.appendFileSync("base_genom", base+"\n");
 
     // adding the same-hand letters
     for (let i=0; i < SAME_HANDS.length; i++) {
@@ -48,6 +69,8 @@ class Genome {
         }
       }
     }
+  // fs.appendFileSync("base_genom", "2: " + base.length+"\n");
+    // fs.appendFileSync("base_genom", base+"\n");
 
     // filling in the rest of symobls
     for (var i=0; i < QWERTY_SEQUENCE.length; i++) {
@@ -65,6 +88,8 @@ class Genome {
       }
     }
 
+    // fs.appendFileSync("base_genom", base.length+"\n");
+    // fs.appendFileSync("base_genom", base+"\n");
     return new Genome(base.join("")).mutate(20);
   }
 
@@ -80,7 +105,7 @@ class Genome {
     const mom   = this.sequence;
     const dad   = another_genome.sequence;
     const slice = mom.length / 2 | 0;
-    const blank = mom.split("").map((s, i)=> dad[i] === s ? s : "Ф").join("");
+    const blank = mom.split("").map((s, i)=> dad[i] === s ? s : "ä").join("");
 
     let child1  = blank.substr(0, slice) + mom.substr(slice);
     let child2  = mom.substr(0, slice) + blank.substr(slice);
@@ -89,11 +114,11 @@ class Genome {
       const symbol = dad[i];
 
       if (child1.indexOf(symbol) === -1) {
-        child1 = child1.replace("Ф", symbol);
+        child1 = child1.replace("ä", symbol);
       }
 
       if (child2.indexOf(symbol) === -1) {
-        child2 = child2.replace("Ф", symbol);
+        child2 = child2.replace("ä", symbol);
       }
     }
 
@@ -101,11 +126,14 @@ class Genome {
   }
 
   mutate(times) {
-    const placeholder1 = "НИКОЛАЙ";
-    const placeholder2 = "НЕБАЛУЙ";
+    // const placeholder1 = "НИКОЛАЙ";
+    // const placeholder2 = "НЕБАЛУЙ";
+    const placeholder1 = "NIKOLAY";
+    const placeholder2 = "NEBALUY";
     const max_tries    = 200;
     let   tries_so_far = 0;
     let   new_sequence = this.sequence;
+
 
     do {
       new_sequence = this.sequence;
@@ -155,12 +183,26 @@ class Genome {
     if (GENOFOND.indexOf(sequence) !== -1) {
       return true; // already tried
     }
+      // fs.appendFileSync("same_hands.log", "Sequence: "+ JSON.stringify(sequence)+"\n");
+      // fs.appendFileSync("same_hands.log", "Sequence type: "+ typeof(sequence)+"\n");
 
-    const hand_name = s => FINGERS[QWERTY_SEQUENCE[sequence.indexOf(s)]][0];
+    const hand_name = s => {
+      // fs.appendFileSync("same_hands.log", "Symbol: "+ s+"\n");
+      // fs.appendFileSync("same_hands.log", "QWERTY_SYM: "+ JSON.stringify(QWERTY_SEQUENCE)+"\n");
+      // fs.appendFileSync("same_hands.log",QWERTY_SEQUENCE.length +"\n");
+      // fs.appendFileSync("same_hands.log",QWERTY_SEQUENCE[47] +"\n");
+      // fs.appendFileSync("same_hands.log",sequence.indexOf(s)+"\n");
+      // fs.appendFileSync("same_hands.log",JSON.stringify(FINGERS) +"\n");
+
+      // fs.appendFileSync("same_hands.log",JSON.stringify(FINGERS[QWERTY_SEQUENCE[sequence.indexOf(s)]]) +"\n");
+
+    return FINGERS[QWERTY_SEQUENCE[sequence.indexOf(s)]][0];
+    };
 
     for (let i=0; i < SAME_HANDS.length; i++) {
       let current_hand = hand_name(SAME_HANDS[i][0]);
-
+      // fs.appendFileSync("same_hands.log", JSON.stringify(SAME_HANDS[i])+"\n");
+      // fs.appendFileSync("same_hands.log", SAME_HANDS[i].length +"\n");
       for (let j=1; j < SAME_HANDS[i].length; j++) {
         if (current_hand !== hand_name(SAME_HANDS[i][j])) {
           return true; // a sequence is in different hands
@@ -199,7 +241,7 @@ class Genome {
 
 const STD_MAPPING = {};
 
-QWERTY.config.trim().split("\n").forEach((line, i, list) => {
+JUCUKEN.config.trim().split("\n").forEach((line, i, list) => {
   if (i % 2 === 0) {
     const shifted_line = list[i+1].trim().split(/\s+/);
     const normal_line  = list[i].trim().split(/\s+/);

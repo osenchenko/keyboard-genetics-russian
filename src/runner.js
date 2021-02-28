@@ -1,4 +1,17 @@
 const { EFFORT_LIMIT, SAME_FINGER_PENALTY, SAME_HAND_PENALTY } = require('./config');
+const fs = require("fs");
+
+const fingersOrder ={
+  'l-pinky': 14,
+  'l-ring': 13,
+  'l-middle': 12,
+  'l-point': 11,
+  'r-pinky': 24,
+  'r-ring': 23,
+  'r-middle': 22,
+  'r-point': 21,
+  'thumb':  0,
+};
 
 module.exports = class Runner {
   constructor(text, options) {
@@ -29,6 +42,8 @@ module.exports = class Runner {
     let shiftingOverheads = 0;
     let prevKey = mapping[' '];
     let prevShift = false;
+    let allDigrams = 0;
+    let reverseOrderDigrams = 0;
 
     while (effort < effortLimit) {
       const i = position++ % text.length;
@@ -50,6 +65,7 @@ module.exports = class Runner {
 
       // various hand movement overheads
       if (hand !== false && key !== prevKey) { // skipping repeats and spaces
+        // fs.appendFileSync("keys-type", JSON.stringify(prevKey)+" - "+ JSON.stringify(key)+"\n");
         if (finger === prevKey.finger) { // same finger usage penalty
           const prevEffort = prevKey.effort + 1;
           const overhead = prevEffort * sameFingerPenalty;
@@ -57,11 +73,21 @@ module.exports = class Runner {
           effort += overhead;
           sameFingerOverheads += overhead;
         } else if (hand === prevKey.hand) { // same hand usage penalty
+          if (prevKey.finger!="thumb" && key.finger!="thumb") {
+            allDigrams++;
+            // fs.appendFileSync("keys-type", "AllDi: " +allDigrams+"\n");
+          }
           const prevEffort = prevKey.effort + 1;
           const overhead = prevEffort * sameHandPenalty;
           // console.log('      same hand overhead', overhead);
           effort += overhead;
           sameHandOverheads += overhead;
+          if (fingersOrder[prevKey.finger] < fingersOrder[key.finger] && prevKey.finger!="thumb" && key.finger!="thumb") {
+            reverseOrderDigrams++;
+            // fs.appendFileSync("keys-type", "ReverseOrderDi: " +reverseOrderDigrams+"\n");
+          }
+
+
         } else if (prevShift !== null && prevShift.hand === hand) { // retraction from a shift position penalty
           const overhead = prevShift.effort * sameHandPenalty;
           // console.log('     retraction from shift overhead');
@@ -92,8 +118,9 @@ module.exports = class Runner {
       overheads: {
         sameHand: Math.round(sameHandOverheads),
         sameFinger: Math.round(sameFingerOverheads),
-        shifting: Math.round(shiftingOverheads)
+        shifting: Math.round(shiftingOverheads),
       },
+      reverseOrderDigrams: Math.round(reverseOrderDigrams/allDigrams*100),
       counts
     };
   }

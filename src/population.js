@@ -1,5 +1,5 @@
 const Genome     = require("./genome");
-const { QWERTY } = require("./presets");
+const { JUCUKEN } = require("./presets");
 
 const POPULATION_SIZE = 12;
 

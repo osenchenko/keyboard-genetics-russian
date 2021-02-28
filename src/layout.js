@@ -1,3 +1,5 @@
+const { fstat } = require("fs");
+const fs = require("fs");
 const { DISTANCES, EFFORTS, FINGERS, ROWS } = require("./config");
 
 module.exports = class Layout {
@@ -40,6 +42,7 @@ function parse(string) {
 
     for (let j=0; j < normal_line.length; j++) {
       const name = keynames.shift();
+      // fs.appendFileSync("keynames.log", name+"\n");
       const key = {
         effort:   EFFORTS[name],
         distance: DISTANCES[name],
@@ -90,7 +93,7 @@ function parse(string) {
   });
 
   keys['\n'].shift = false;
-
+  // fs.writeFile("keys.log", JSON.stringify(keys), (err)=>{if (err) throw err;});
   return keys;
 }
 
